@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>SecureDocs | Insurance document vault</title>
+  <style>
+    :root { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #17223b; background: #f4f7fb; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    header { background: #102447; color: white; padding: 18px max(24px, calc((100vw - 1120px)/2)); display: flex; align-items: center; justify-content: space-between; }
+    .brand { display: flex; gap: 12px; align-items: center; font-weight: 750; letter-spacing: .2px; }
+    .mark { display: grid; place-items: center; background: #43c4b4; color: #102447; width: 36px; height: 36px; border-radius: 11px; font-size: 20px; }
+    header small { color: #b6c8e3; }
+    main { max-width: 1120px; margin: 38px auto; padding: 0 24px; }
+    .intro { display: flex; justify-content: space-between; gap: 24px; align-items: end; margin-bottom: 24px; }
+    h1 { font-size: clamp(27px, 4vw, 36px); margin: 0 0 8px; letter-spacing: -.7px; }
+    .intro p { margin: 0; color: #64728b; }
+    .status { font-size: 13px; color: #3b6570; white-space: nowrap; }
+    .layout { display: grid; grid-template-columns: minmax(290px, 350px) 1fr; gap: 22px; align-items: start; }
+    .card { background: white; border: 1px solid #e1e8f0; border-radius: 16px; box-shadow: 0 8px 26px #243b5d0b; }
+    .form-card { padding: 23px; }
+    .list-card { overflow: hidden; }
+    h2 { margin: 0 0 20px; font-size: 18px; }
+    label { display: block; font-size: 13px; font-weight: 650; margin: 14px 0 6px; color: #35435c; }
+    input, select { width: 100%; border: 1px solid #d4deea; border-radius: 9px; padding: 11px 12px; font: inherit; color: inherit; background: white; }
+    input:focus, select:focus { outline: 3px solid #d2f3ee; border-color: #2aa99b; }
+    input[type=file] { padding: 8px; font-size: 13px; }
+    button { border: 0; border-radius: 9px; font: inherit; font-weight: 700; cursor: pointer; }
+    .primary { width: 100%; margin-top: 18px; padding: 12px; color: white; background: #167d79; }
+    .primary:hover { background: #116b68; }
+    .primary:disabled { opacity: .6; cursor: wait; }
+    .hint { color: #748198; font-size: 12px; line-height: 1.5; margin: 10px 0 0; }
+    .list-head { padding: 21px 23px; border-bottom: 1px solid #e8edf3; display: flex; align-items: center; justify-content: space-between; }
+    .list-head h2 { margin: 0; }
+    .count { background: #e7f5f3; color: #176c68; border-radius: 999px; padding: 5px 10px; font-weight: 700; font-size: 12px; }
+    #message { margin: 0 0 16px; padding: 11px 13px; border-radius: 9px; display: none; font-size: 14px; }
+    #message.error { display: block; color: #8d2d2d; background: #fff0ef; }
+    #message.success { display: block; color: #176c68; background: #e7f5f3; }
+    .docs { padding: 4px 23px; }
+    .doc { display: grid; grid-template-columns: 42px 1fr auto; gap: 13px; align-items: center; padding: 17px 0; border-bottom: 1px solid #edf1f5; }
+    .doc:last-child { border: 0; }
+    .file-icon { width: 42px; height: 48px; display: grid; place-items: center; background: #eef4fb; border-radius: 9px; color: #315c8c; font-size: 11px; font-weight: 800; }
+    .doc-title { font-weight: 700; margin-bottom: 4px; overflow-wrap: anywhere; }
+    .meta { color: #728097; font-size: 12px; line-height: 1.55; }
+    .actions { display: flex; gap: 8px; }
+    .link-button, .delete-button { padding: 8px 10px; font-size: 12px; text-decoration: none; display: inline-block; }
+    .link-button { color: #175d73; background: #edf6f8; }
+    .delete-button { color: #9e4444; background: #fff0ef; }
+    .empty { padding: 44px 20px; text-align: center; color: #748198; }
+    @media (max-width: 760px) { main { margin-top: 25px; } .intro { display: block; } .status { display: block; margin-top: 12px; } .layout { grid-template-columns: 1fr; } .form-card { order: 1; } }
+    @media (max-width: 500px) { header { padding: 14px 18px; } main { padding: 0 16px; } .doc { grid-template-columns: 36px 1fr; } .file-icon { width: 36px; height: 42px; } .actions { grid-column: 2; } }
+  </style>
+</head>
+<body>
+  <header><div class="brand"><div class="mark">S</div><div>SecureDocs<br><small>Insurance document vault</small></div></div><small>Private workspace</small></header>
+  <main>
+    <section class="intro"><div><h1>Insurance documents</h1><p>Keep policy and claims files organized in one secure place.</p></div><div class="status" id="health">Checking service…</div></section>
+    <div id="message" role="status" aria-live="polite"></div>
+    <section class="layout">
+      <form class="card form-card" id="upload-form">
+        <h2>Add a document</h2>
+        <label for="title">Document title</label><input id="title" name="title" required maxlength="120" placeholder="e.g. Auto policy renewal">
+        <label for="category">Document category</label><select id="category" name="category" required><option value="">Choose category</option><option>Policy</option><option>Claim</option><option>Customer identity</option><option>Invoice</option><option>Other</option></select>
+        <label for="customerName">Customer name</label><input id="customerName" name="customerName" maxlength="120" placeholder="Optional">
+        <label for="policyNumber">Policy number</label><input id="policyNumber" name="policyNumber" maxlength="60" placeholder="Optional">
+        <label for="file">Choose file</label><input id="file" name="file" type="file" accept=".pdf,.png,.jpg,.jpeg,.docx" required>
+        <p class="hint">PDF, PNG, JPG, or DOCX. Maximum 10 MB per file.</p>
+        <button class="primary" type="submit">Upload document</button>
+      </form>
+      <section class="card list-card" aria-labelledby="docs-heading">
+        <div class="list-head"><h2 id="docs-heading">Document library</h2><span class="count" id="count">0 files</span></div>
+        <div class="docs" id="documents"><div class="empty">Loading documents…</div></div>
+      </section>
+    </section>
+  </main>
+  <script>
+    const list = document.querySelector('#documents');
+    const count = document.querySelector('#count');
+    const message = document.querySelector('#message');
+    const health = document.querySelector('#health');
+    const form = document.querySelector('#upload-form');
+    const esc = (value) => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const showMessage = (text, kind) => { message.textContent = text; message.className = kind; window.setTimeout(() => { message.className = ''; }, 5000); };
+    const niceSize = (size) => size < 1024 * 1024 ? `${Math.max(1, Math.round(size / 1024))} KB` : `${(size / 1024 / 1024).toFixed(1)} MB`;
+    async function loadDocuments() {
+      try {
+        const [healthResponse, docsResponse] = await Promise.all([fetch('/api/health'), fetch('/api/documents')]);
+        health.textContent = healthResponse.ok ? '● Services connected' : 'Services unavailable';
+        health.style.color = healthResponse.ok ? '#19776f' : '#a34444';
+        if (!docsResponse.ok) throw new Error(docsResponse.status === 401 ? 'Sign-in required. Enter your SecureDocs credentials.' : 'Could not load documents.');
+        const documents = await docsResponse.json();
+        count.textContent = `${documents.length} ${documents.length === 1 ? 'file' : 'files'}`;
+        if (!documents.length) { list.innerHTML = '<div class="empty">No documents yet. Upload the first one using the form.</div>'; return; }
+        list.innerHTML = documents.map(doc => {
+          const ext = (doc.originalName.split('.').pop() || 'FILE').slice(0, 4).toUpperCase();
+          const date = new Date(doc.createdAt).toLocaleDateString();
+          return `<article class="doc"><div class="file-icon">${esc(ext)}</div><div><div class="doc-title">${esc(doc.title)}</div><div class="meta">${esc(doc.category)} · ${esc(doc.customerName || 'No customer')} · ${niceSize(doc.size)}<br>${doc.policyNumber ? `Policy ${esc(doc.policyNumber)} · ` : ''}${date}</div></div><div class="actions"><a class="link-button" href="/api/documents/${encodeURIComponent(doc._id)}/file">Download</a><button class="delete-button" data-delete="${esc(doc._id)}" type="button">Delete</button></div></article>`;
+        }).join('');
+      } catch (error) { list.innerHTML = `<div class="empty">${esc(error.message)}</div>`; health.textContent = '● Connection issue'; health.style.color = '#a34444'; }
+    }
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const button = form.querySelector('button[type=submit]');
+      button.disabled = true; button.textContent = 'Uploading…';
+      try {
+        const response = await fetch('/api/documents', { method: 'POST', body: new FormData(form) });
+        const result = response.status === 204 ? null : await response.json();
+        if (!response.ok) throw new Error(result?.error || 'Upload failed.');
+        form.reset(); showMessage('Document uploaded successfully.', 'success'); await loadDocuments();
+      } catch (error) { showMessage(error.message, 'error'); }
+      finally { button.disabled = false; button.textContent = 'Upload document'; }
+    });
+    list.addEventListener('click', async (event) => {
+      const button = event.target.closest('[data-delete]');
+      if (!button) return;
+      if (!window.confirm('Delete this document and its uploaded file?')) return;
+      try {
+        const response = await fetch(`/api/documents/${encodeURIComponent(button.dataset.delete)}`, { method: 'DELETE' });
+        if (!response.ok) throw new Error('Could not delete document.');
+        showMessage('Document deleted.', 'success'); await loadDocuments();
+      } catch (error) { showMessage(error.message, 'error'); }
+    });
+    loadDocuments();
+  </script>
+</body>
+</html>
